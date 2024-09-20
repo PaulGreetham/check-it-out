@@ -5,5 +5,13 @@
     "map": "Map",
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode"
+  },
+  "taskTimeCalculator": {
+    "welcome": "Welcome to the Task Time Calculator",
+    "explanation": "Input the tasks for each moped and the travel times to calculate the total time needed. The team consists of Swappers, Fixers, and Mechanics. A Swapper replaces batteries (1 minute), a Fixer performs small repairs (5 minutes), and a Mechanic performs major repairs (8 minutes).",
+    "mopedsLabel": "Mopeds (tasks separated by commas, e.g., S, F, SF, M)",
+    "distancesLabel": "Distances (in minutes, separated by commas)",
+    "calculate": "Calculate",
+    "totalTime": "Total Time: {{time}} minutes"
   }
 }

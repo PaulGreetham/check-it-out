@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import './TaskTimeCalculator.scss';
 import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const TaskTimeCalculator: React.FC = () => {
-  const [mopeds, setMopeds] = useState<string[]>(["S", "F", "SF", "FF"]);
-  const [distances, setDistances] = useState<number[]>([2, 4, 3]);
+  const { t } = useTranslation(); // For translations
+  const [mopeds, setMopeds] = useState<string[]>(['S', 'F', 'SF', 'FF']); // Initial example data
+  const [distances, setDistances] = useState<number[]>([2, 4, 3]); // Initial example distances
   const [totalTime, setTotalTime] = useState<number | null>(null);
 
   // Function to calculate total time
@@ -13,11 +14,12 @@ const TaskTimeCalculator: React.FC = () => {
     let totalTime = 0;
 
     mopeds.forEach((moped, i) => {
-      // Calculate task times for each moped
+      // Calculate task time for the current moped
       for (const task of moped) {
         totalTime += taskTimes[task];
       }
-      // Add travel time between mopeds
+
+      // Add travel time (if not the last moped)
       if (i < distances.length) {
         totalTime += distances[i];
       }
@@ -26,40 +28,44 @@ const TaskTimeCalculator: React.FC = () => {
     return totalTime;
   };
 
-  // Handle calculation when the button is clicked
+  // Handle calculation
   const handleCalculate = () => {
-    const time = calculateTotalTime(mopeds, distances);
-    setTotalTime(time);
+    const calculatedTime = calculateTotalTime(mopeds, distances);
+    setTotalTime(calculatedTime);
   };
 
   return (
-    <Card className="calculator-card">
+    <Card sx={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
       <CardContent>
-        <Typography variant="h4" className="calculator-title">
-          Task Time Calculator
+        <Typography variant="h1" gutterBottom>
+          {t('taskTimeCalculator.welcome')} {/* Translated Title */}
         </Typography>
+        <Typography variant="body1" gutterBottom>
+          {t('taskTimeCalculator.explanation')} {/* Translated Explanation */}
+        </Typography>
+
         <TextField
-          label="Mopeds (comma separated)"
+          fullWidth
+          label={t('taskTimeCalculator.mopedsLabel')} // Mopeds input label
           variant="outlined"
           value={mopeds.join(', ')}
           onChange={(e) => setMopeds(e.target.value.split(',').map(m => m.trim()))}
-          fullWidth
-          className="calculator-input"
+          sx={{ mb: 2 }}
         />
         <TextField
-          label="Distances (comma separated)"
+          fullWidth
+          label={t('taskTimeCalculator.distancesLabel')} // Distances input label
           variant="outlined"
           value={distances.join(', ')}
           onChange={(e) => setDistances(e.target.value.split(',').map(d => parseInt(d.trim(), 10)))}
-          fullWidth
-          className="calculator-input"
+          sx={{ mb: 2 }}
         />
         <Button variant="contained" color="primary" onClick={handleCalculate} fullWidth>
-          Calculate Total Time
+          {t('taskTimeCalculator.calculate')}  {/* Translated Button Text */}
         </Button>
         {totalTime !== null && (
-          <Typography variant="body1" className="calculator-result">
-            Total Time: {totalTime} minutes
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            {t('taskTimeCalculator.totalTime', { time: totalTime })}  {/* Translated Total Time */}
           </Typography>
         )}
       </CardContent>

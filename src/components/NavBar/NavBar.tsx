@@ -1,13 +1,13 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { useThemeContext } from '../../theme/ThemeProvider'; // Ensure correct path
+import { useThemeContext } from '../../theme/ThemeProvider';
 import { Link } from 'react-router-dom';
-import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher'; // Ensure correct path
-import { useTranslation } from 'react-i18next'; // Import the useTranslation hook
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import { useTranslation } from 'react-i18next'; // Import the translation hook
 
 const Navbar: React.FC = () => {
   const { isDarkMode, toggleTheme } = useThemeContext();
-  const { t } = useTranslation(); // Destructure the `t` function for translations
+  const { t } = useTranslation(); // Access translations
 
   return (
     <AppBar position="static">
@@ -15,24 +15,18 @@ const Navbar: React.FC = () => {
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Check-It-Out
         </Typography>
-
-        {/* Navigation Links using translations */}
         <Button color="inherit" component={Link} to="/">
-          {t('navbar.home')} {/* Translated Home */}
+          {t('navbar.home')} {/* Translated "Home" */}
         </Button>
         <Button color="inherit" component={Link} to="/task-time-calculator">
-          {t('navbar.taskTimeCalculator')} {/* Translated Task Time Calculator */}
+          {t('navbar.taskTimeCalculator')} {/* Translated "Task Time Calculator" */}
         </Button>
         <Button color="inherit" component={Link} to="/map">
-          {t('navbar.map')} {/* Translated Map */}
+          {t('navbar.map')} {/* Translated "Map" */}
         </Button>
-
-        {/* Dark Mode Toggle Button */}
         <Button color="inherit" onClick={toggleTheme}>
-          {isDarkMode ? t('navbar.lightMode') : t('navbar.darkMode')} {/* Translated Dark/Light Mode */}
+          {isDarkMode ? t('navbar.lightMode') : t('navbar.darkMode')} {/* Dark/Light Mode */}
         </Button>
-
-        {/* Language Switcher */}
         <LanguageSwitcher />
       </Toolbar>
     </AppBar>

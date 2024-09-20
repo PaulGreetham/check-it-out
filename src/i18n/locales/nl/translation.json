@@ -5,5 +5,13 @@
     "map": "Kaart",
     "darkMode": "Donkere modus",
     "lightMode": "Lichte modus"
+  },
+  "taskTimeCalculator": {
+    "welcome": "Welkom bij de Tijdcalculator voor Taken",
+    "explanation": "Voer de taken voor elke bromfiets en de reistijden in om de totale benodigde tijd te berekenen. Het team bestaat uit Swappers, Fixers en Mechanici. Een Swapper vervangt batterijen (1 minuut), een Fixer voert kleine reparaties uit (5 minuten) en een Mechanicus doet grote reparaties (8 minuten).",
+    "mopedsLabel": "Bromfietsen (taken gescheiden door komma's, bijvoorbeeld S, F, SF, M)",
+    "distancesLabel": "Afstanden (in minuten, gescheiden door komma's)",
+    "calculate": "Berekenen",
+    "totalTime": "Totale tijd: {{time}} minuten"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "navbar": {
+    "home": "Thuis",
+    "taskTimeCalculator": "Tijdcalculator voor taken",
+    "map": "Kaart",
+    "darkMode": "Donkere modus",
+    "lightMode": "Lichte modus"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "navbar": {
+    "home": "Home",
+    "taskTimeCalculator": "Task Time Calculator",
+    "map": "Map",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  }
+}

@@ -3,8 +3,8 @@
     "home": "Home",
     "taskTimeCalculator": "Task Time Calculator",
     "map": "Map",
-    "darkMode": "Dark Mode",
-    "lightMode": "Light Mode"
+    "darkMode": "Dark",
+    "lightMode": "Light"
   },
   "taskTimeCalculator": {
     "welcome": "Welcome to the Task Time Calculator",

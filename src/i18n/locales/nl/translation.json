@@ -3,8 +3,8 @@
     "home": "Thuis",
     "taskTimeCalculator": "Tijdcalculator voor taken",
     "map": "Kaart",
-    "darkMode": "Donkere modus",
-    "lightMode": "Lichte modus"
+    "darkMode": "Donkere",
+    "lightMode": "Lichte"
   },
   "taskTimeCalculator": {
     "welcome": "Welkom bij de Tijdcalculator voor Taken",

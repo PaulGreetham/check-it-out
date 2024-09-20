@@ -1,86 +1,138 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import './MapboxNeighborhoodMap.scss'; // Assuming you have a corresponding SCSS file
 import 'mapbox-gl/dist/mapbox-gl.css';
+import axios from 'axios';
+import './MapboxNeighborhoodMap.scss';
 
-// Set your Mapbox access token here
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || '';
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
 const MapboxNeighborhoodMap: React.FC = () => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);  // Reference to the map container
-  const [map, setMap] = useState<mapboxgl.Map | null>(null);
-  const [hoveredNeighborhood, setHoveredNeighborhood] = useState<string | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [geoData, setGeoData] = useState<any>(null);
 
-  // Effect to initialize the map and add the GeoJSON layer
+  // Fetch GeoJSON data from the API
+  const fetchGeoJSON = async () => {
+    try {
+      const response = await axios.get(
+        'https://maps.amsterdam.nl/open_geodata/geojson_latlng.php?KAARTLAAG=INDELING_BUURT&THEMA=gebiedsindeling'
+      );
+      console.log('Fetched GeoJSON data:', response.data);
+      setGeoData(response.data);
+    } catch (error) {
+      console.error('Error fetching GeoJSON:', error);
+    }
+  };
+
+  // Initialize the map
   useEffect(() => {
-    if (mapContainerRef.current && !map) {
-      const initializeMap = new mapboxgl.Map({
+    if (mapContainerRef.current && !mapRef.current) {
+      mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/streets-v11', // Mapbox style
-        center: [4.9041, 52.3676], // Amsterdam coordinates
-        zoom: 12,
+        style: 'mapbox://styles/mapbox/light-v10',
+        center: [4.9041, 52.3676],
+        zoom: 11,
       });
 
-      initializeMap.on('load', () => {
-        setMap(initializeMap);
+      mapRef.current.on('load', () => {
+        console.log('Map loaded');
+      });
+    }
 
-        // Fetch GeoJSON data
-        initializeMap.addSource('amsterdam-neighborhoods', {
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  // Add GeoJSON data and layers when data is available
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && geoData && map.isStyleLoaded()) {
+      console.log('Adding GeoJSON to map...');
+
+      if (!map.getSource('neighborhoods')) {
+        map.addSource('neighborhoods', {
           type: 'geojson',
-          data: 'https://maps.amsterdam.nl/open_geodata/geojson_latlng.php?KAARTLAAG=INDELING_BUURT&THEMA=gebiedsindeling',
+          data: geoData,
         });
 
-        // Add neighborhoods fill layer
-        initializeMap.addLayer({
+        map.addLayer({
           id: 'neighborhoods-fill',
           type: 'fill',
-          source: 'amsterdam-neighborhoods',
+          source: 'neighborhoods',
           paint: {
-            'fill-color': '#9B40FF',  // Check's brand purple color
+            'fill-color': '#9B40FF',
             'fill-opacity': 0.5,
           },
         });
 
-        // Add outline for neighborhoods
-        initializeMap.addLayer({
+        map.addLayer({
           id: 'neighborhoods-outline',
           type: 'line',
-          source: 'amsterdam-neighborhoods',
+          source: 'neighborhoods',
           paint: {
             'line-color': '#000',
-            'line-width': 2,
+            'line-width': 1,
           },
         });
 
-        // Mousemove event for hover effect
-        initializeMap.on('mousemove', 'neighborhoods-fill', (e) => {
+        // Add hover effect
+        const popup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        });
+
+        map.on('mousemove', 'neighborhoods-fill', (e) => {
           if (e.features && e.features.length > 0) {
             const feature = e.features[0];
-            const neighborhoodName = feature.properties?.Buurt;
-            setHoveredNeighborhood(neighborhoodName);
+            map.getCanvas().style.cursor = 'pointer';
+
+            const coordinates = e.lngLat;
+            const buurtName = feature.properties?.Buurt;
+
+            popup.setLngLat(coordinates)
+              .setHTML(`<strong>${buurtName}</strong>`)
+              .addTo(map);
+
+            // Only set feature state if feature.id is defined
+            if (feature.id !== undefined) {
+              map.setFeatureState(
+                { source: 'neighborhoods', id: feature.id },
+                { hover: true }
+              );
+            }
           }
         });
 
-        // Mouseleave event to reset hover state
-        initializeMap.on('mouseleave', 'neighborhoods-fill', () => {
-          setHoveredNeighborhood(null);
-        });
-      });
-    }
+        map.on('mouseleave', 'neighborhoods-fill', () => {
+          map.getCanvas().style.cursor = '';
+          popup.remove();
 
-    // Cleanup the map instance when the component unmounts
-    return () => map?.remove();
-  }, [map]);
+          // Clear feature state for all features
+          map.removeFeatureState({
+            source: 'neighborhoods'
+          });
+        });
+
+        console.log('GeoJSON layers added');
+      }
+    }
+  }, [geoData]);
+
+  // Fetch the GeoJSON data when the component mounts
+  useEffect(() => {
+    fetchGeoJSON();
+  }, []);
 
   return (
-    <div className="mapbox-container">
-      <div ref={mapContainerRef} className="mapbox-map" />
-      {hoveredNeighborhood && (
-        <div className="mapbox-tooltip">
-          {hoveredNeighborhood}
-        </div>
-      )}
-    </div>
+    <div
+      className="map-container"
+      ref={mapContainerRef}
+      style={{ width: '100%', height: '500px', border: '1px solid #9B40FF' }}
+    />
   );
 };
 

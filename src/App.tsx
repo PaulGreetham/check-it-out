@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from './theme/ThemeProvider';
+import ThemeProvider from './theme/ThemeProvider';
 import Navbar from './components/NavBar/NavBar';
 import TaskTimeCalculator from './components/TaskTimeCalculator/TaskTimeCalculator';
 import MapboxNeighborhoodMap from './components/MapboxNeighborhoodMap/MapboxNeighborhoodMap';

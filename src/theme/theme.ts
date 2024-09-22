@@ -26,7 +26,7 @@ export const lightTheme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Action-Condensed-Bold-Grade-1', // Custom brand font
+      'Bebas Neue', // Use Bebas Neue as the primary font
       'ui-sans-serif',
       'system-ui',
       '-apple-system',
@@ -42,6 +42,25 @@ export const lightTheme = createTheme({
       'Segoe UI Symbol',
       'Noto Color Emoji',
     ].join(','),
+    // Define font weights
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
+    // Optionally, set font weights for each variant
+    h1: { fontWeight: 900 },
+    h2: { fontWeight: 700 },
+    h3: { fontWeight: 500 },
+    h4: { fontWeight: 400 },
+    h5: { fontWeight: 300 },
+    h6: { fontWeight: 100 },
+    subtitle1: { fontWeight: 400 },
+    subtitle2: { fontWeight: 300 },
+    body1: { fontWeight: 400 },
+    body2: { fontWeight: 300 },
+    button: { fontWeight: 500 },
+    caption: { fontWeight: 300 },
+    overline: { fontWeight: 300 },
   },
 });
 
@@ -64,7 +83,7 @@ export const darkTheme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Action-Condensed-Bold-Grade-1', // Custom brand font
+      'Bebas Neue', // Use Bebas Neue as the primary font
       'ui-sans-serif',
       'system-ui',
       '-apple-system',
@@ -80,5 +99,24 @@ export const darkTheme = createTheme({
       'Segoe UI Symbol',
       'Noto Color Emoji',
     ].join(','),
+    // Define font weights
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
+    // Optionally, set font weights for each variant
+    h1: { fontWeight: 900 },
+    h2: { fontWeight: 700 },
+    h3: { fontWeight: 500 },
+    h4: { fontWeight: 400 },
+    h5: { fontWeight: 300 },
+    h6: { fontWeight: 100 },
+    subtitle1: { fontWeight: 400 },
+    subtitle2: { fontWeight: 300 },
+    body1: { fontWeight: 400 },
+    body2: { fontWeight: 300 },
+    button: { fontWeight: 500 },
+    caption: { fontWeight: 300 },
+    overline: { fontWeight: 300 },
   },
 });

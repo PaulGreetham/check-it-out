@@ -131,7 +131,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
     <div
       className="map-container"
       ref={mapContainerRef}
-      style={{ width: '100%', height: '500px', border: '1px solid #9B40FF' }}
+      style={{ width: '100%', height: '500px', border: '8px solid #9B40FF' }}
     />
   );
 };

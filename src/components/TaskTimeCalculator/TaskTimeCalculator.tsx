@@ -1,105 +1,203 @@
+// src/components/TaskTimeCalculator.tsx
+
 import React, { useState } from 'react';
-import { TextField, Button, Card, CardContent, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import {
+  TextField,
+  Button,
+  Typography,
+  List,
+  ListItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Grid,
+  Paper,
+  Divider,
+  Box,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { TaskTimeCalculatorProps, WorkerBreakdown } from '../../types/components';
+import { calculateTotalTime } from '../../utils/calculateTotalTime';
 
-const TaskTimeCalculator: React.FC = () => {
-  const { t } = useTranslation();
-  const [mopeds, setMopeds] = useState<string>('S, F, SF, FF');  // Storing mopeds as string for input
-  const [distances, setDistances] = useState<string>('2, 4, 3');  // Storing distances as string for input
+// Import the image from the assets folder
+import TravelingImage from '../../assets/undraw_traveling_yhxq.svg';
+
+const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
+  initialMopeds = '',
+  initialDistances = '',
+}) => {
+  const [mopeds, setMopeds] = useState<string>(initialMopeds);
+  const [distances, setDistances] = useState<string>(initialDistances);
   const [totalTime, setTotalTime] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [detailedBreakdown, setDetailedBreakdown] = useState<WorkerBreakdown[] | null>(null);
 
-  // Function to calculate total time
-  const calculateTotalTime = (mopedsArray: string[], distancesArray: number[]): number => {
-    const taskTimes: Record<string, number> = { S: 1, F: 5, M: 8 };  // Define task times
-    let totalTime = 0;
-
-    mopedsArray.forEach((moped, i) => {
-      // Calculate task time for the current moped
-      for (const task of moped) {
-        if (taskTimes[task]) {
-          totalTime += taskTimes[task];
-        }
-      }
-
-      // Add travel time (if not the last moped) and ensure it's a valid number
-      if (i < distancesArray.length && !isNaN(distancesArray[i])) {
-        totalTime += distancesArray[i];
-      }
-    });
-
-    return totalTime;
-  };
-
-  // Handle mopeds input as a string and process them as array during calculation
   const handleMopedsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMopeds(e.target.value);  // Store mopeds as raw string input
+    setMopeds(e.target.value);
   };
 
-  // Handle distances input as a string and process them as numbers during calculation
   const handleDistancesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDistances(e.target.value);  // Store distances as raw string input
+    setDistances(e.target.value);
   };
 
-  // Handle calculation
   const handleCalculate = () => {
-    // Parse the mopeds string into an array of valid tasks, filtering out invalid values
-    const mopedsArray = mopeds
-      .split(',')
-      .map((m) => m.trim())  // Trim whitespace
-      .filter((m) => /^[SFM]+$/.test(m));  // Filter valid moped tasks (S, F, M)
+    setError(null);
+    const mopedsArray = mopeds.split(',').map((m) => m.trim());
+    const distancesArray = distances.split(',').map((d) => parseInt(d.trim(), 10));
 
-    // Parse the distances string into an array of numbers, filtering out invalid values
-    const distancesArray = distances
-      .split(',')
-      .map((d) => parseInt(d.trim(), 10))  // Parse to number
-      .filter((d) => !isNaN(d));  // Filter out invalid numbers
+    // Validation
+    if (distancesArray.length !== mopedsArray.length - 1) {
+      setError('The number of distances should be one less than the number of mopeds.');
+      setTotalTime(null);
+      setDetailedBreakdown(null);
+      return;
+    }
 
-    setTotalTime(calculateTotalTime(mopedsArray, distancesArray));
+    const { totalTime: total, workerBreakdowns } = calculateTotalTime(mopedsArray, distancesArray);
+    setTotalTime(total);
+    setDetailedBreakdown(workerBreakdowns);
+  };
+
+  const getColorForWorker = (workerName: string): string => {
+    switch (workerName) {
+      case 'Swapper':
+        return '#4caf50';
+      case 'Fixer':
+        return '#ff9800';
+      case 'Mechanic':
+        return '#f44336';
+      default:
+        return '#000';
+    }
   };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
-      <CardContent>
-        <Typography variant="h1" gutterBottom>
-          {t('taskTimeCalculator.welcome')} {/* Translated "Welcome" */}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          {t('taskTimeCalculator.explanation')} {/* Translated "Explanation" */}
-        </Typography>
+    <Box sx={{ flexGrow: 1, padding: '1rem' }}>
+      {/* Grid Container */}
+      <Grid container spacing={2}>
+        {/* Column 1: Image */}
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            <img
+              src={TravelingImage}
+              alt="Traveling"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
+          </Box>
+        </Grid>
 
-        {/* Mopeds Input Field */}
-        <TextField
-          fullWidth
-          label={t('taskTimeCalculator.mopedsLabel')} // Translated "Mopeds label"
-          variant="outlined"
-          value={mopeds} // Use the mopeds string for input
-          onChange={handleMopedsChange}
-          sx={{ mb: 2 }}
-        />
+        {/* Column 2: Calculator */}
+        <Grid item xs={12} md={4}>
+          <Paper elevation={3} sx={{ padding: '1rem' }}>
+            <Typography variant="h4" gutterBottom align="center">
+              Task Time Calculator
+            </Typography>
+            <Typography variant="body1" gutterBottom align="center">
+              Calculate the total time for the group to complete the route.
+            </Typography>
 
-        {/* Distances Input Field */}
-        <TextField
-          fullWidth
-          label={t('taskTimeCalculator.distancesLabel')} // Translated "Distances label"
-          variant="outlined"
-          value={distances} // Use the distances string for input
-          onChange={handleDistancesChange}
-          sx={{ mb: 2 }}
-        />
+            <Paper elevation={1} sx={{ padding: '1rem', marginBottom: '1rem' }}>
+              <Typography variant="h6" gutterBottom>
+                Task Types:
+              </Typography>
+              <List dense>
+                <ListItem>
+                  <Typography variant="body1">
+                    <strong>S:</strong> Swap (1 minute)
+                  </Typography>
+                </ListItem>
+                <ListItem>
+                  <Typography variant="body1">
+                    <strong>F:</strong> Fix (5 minutes)
+                  </Typography>
+                </ListItem>
+                <ListItem>
+                  <Typography variant="body1">
+                    <strong>M:</strong> Mechanic repair (8 minutes)
+                  </Typography>
+                </ListItem>
+              </List>
+            </Paper>
 
-        {/* Calculate Button */}
-        <Button variant="contained" color="primary" onClick={handleCalculate} fullWidth>
-          {t('taskTimeCalculator.calculate')}  {/* Translated "Calculate" */}
-        </Button>
+            <TextField
+              fullWidth
+              label="Mopeds (e.g., S,F,SF,FF)"
+              variant="outlined"
+              value={mopeds}
+              onChange={handleMopedsChange}
+              sx={{ mb: 2 }}
+            />
 
-        {/* Display Total Time if Calculated */}
-        {totalTime !== null && (
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            {t('taskTimeCalculator.totalTime', { time: totalTime })}  {/* Translated "Total Time" */}
-          </Typography>
-        )}
-      </CardContent>
-    </Card>
+            <TextField
+              fullWidth
+              label="Distances in minutes (e.g., 2,4,3)"
+              variant="outlined"
+              value={distances}
+              onChange={handleDistancesChange}
+              sx={{ mb: 2 }}
+            />
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCalculate}
+              fullWidth
+              size="large"
+            >
+              Calculate
+            </Button>
+
+            {error && (
+              <Typography color="error" sx={{ mt: 2 }}>
+                {error}
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Column 3: Results and Breakdown */}
+        <Grid item xs={12} md={4}>
+          {totalTime !== null && detailedBreakdown && (
+            <Paper elevation={3} sx={{ padding: '1rem' }}>
+              <Typography variant="h5" sx={{ mb: 2 }} align="center">
+                Total Time: {totalTime} minutes
+              </Typography>
+              <Divider />
+              <div style={{ marginTop: '1rem' }}>
+                {detailedBreakdown.map((worker) => (
+                  <Accordion key={worker.workerName} defaultExpanded>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography
+                        variant="h6"
+                        style={{ color: getColorForWorker(worker.workerName) }}
+                      >
+                        {worker.workerName}: {worker.time} minutes
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <List>
+                        {worker.breakdownItems.map((item, index) => (
+                          <ListItem key={index}>
+                            <Typography variant="body1">{item.description}</Typography>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </AccordionDetails>
+                  </Accordion>
+                ))}
+              </div>
+            </Paper>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

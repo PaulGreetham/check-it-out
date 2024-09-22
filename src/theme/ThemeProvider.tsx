@@ -20,7 +20,7 @@ export const useThemeContext = () => {
   return context;
 };
 
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -34,3 +34,5 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     </ThemeContext.Provider>
   );
 };
+
+export default ThemeProvider;

@@ -3,8 +3,7 @@ import mapboxgl, { Map, AnyLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 
-// **IMPORTANT:** Replace the string below with your actual Mapbox access token.
-mapboxgl.accessToken = 'pk.eyJ1IjoicGF1bGdyZWV0aGFtIiwiYSI6ImNtMWIzOXVyZTF3amQyd3NianB5ZnZyOTMifQ.1EbyJg4L9zaOvmZYyrPtVA';
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
 const MapboxNeighborhoodMap: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -52,7 +51,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/light-v10',
-      center: [4.9041, 52.3676], // Initial center; will be adjusted to fit bounds
+      center: [4.9041, 52.3676],
       zoom: 11,
     });
 

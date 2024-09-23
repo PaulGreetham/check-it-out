@@ -21,8 +21,8 @@ const LandingPage: React.FC = () => {
       <div className="landing-page__content">
         <h1>Welcome.</h1>
         <p>
-          Optimize your mode routes efficiently and save time with our advanced tools like our{' '}
-          <Link to="/task-time-calculator" className="landing-page__link">calculator</Link>.
+          Optimize your moped routes efficiently and save time with our advanced{' '}
+          <Link to="/task-time-calculator" className="landing-page__link">calculator</Link> tool.
         </p>
         <p>
           Check out the cool neighbourhoods of Amsterdam with our{' '}

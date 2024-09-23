@@ -1,6 +1,6 @@
 // src/components/TaskTimeCalculator.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -11,16 +11,13 @@ import {
   AccordionSummary,
   AccordionDetails,
   Grid,
-  Paper,
   Divider,
   Box,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Swal from 'sweetalert2';
 import { TaskTimeCalculatorProps, WorkerBreakdown } from '../../types/components';
 import { calculateTotalTime } from '../../utils/calculateTotalTime';
-
-// Import the image from the assets folder
-import TravelingImage from '../../assets/undraw_traveling_yhxq.svg';
 
 const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
   initialMopeds = '',
@@ -42,21 +39,51 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
 
   const handleCalculate = () => {
     setError(null);
-    const mopedsArray = mopeds.split(',').map((m) => m.trim());
-    const distancesArray = distances.split(',').map((d) => parseInt(d.trim(), 10));
+    setTotalTime(null);
+    setDetailedBreakdown(null);
 
-    // Validation
-    if (distancesArray.length !== mopedsArray.length - 1) {
-      setError('The number of distances should be one less than the number of mopeds.');
-      setTotalTime(null);
-      setDetailedBreakdown(null);
+    const mopedsArray = mopeds.split(',').map((m) => m.trim());
+    const distancesArray = distances.split(',').map((d) => d.trim());
+
+    // Validation for mopeds input
+    const invalidMoped = mopedsArray.find((moped) => !/^[SFM]+$/i.test(moped));
+    if (invalidMoped) {
+      setError(`Invalid moped entry: "${invalidMoped}". Only letters S, F, M are allowed.`);
       return;
     }
 
-    const { totalTime: total, workerBreakdowns } = calculateTotalTime(mopedsArray, distancesArray);
+    // Validation for distances input
+    const invalidDistance = distancesArray.find((distance) => !/^\d+$/.test(distance));
+    if (invalidDistance) {
+      setError(`Invalid distance entry: "${invalidDistance}". Only numbers are allowed.`);
+      return;
+    }
+
+    // Convert distancesArray to numbers
+    const distancesNumberArray = distancesArray.map((d) => parseInt(d, 10));
+
+    if (distancesNumberArray.length !== mopedsArray.length - 1) {
+      setError('The number of distances should be one less than the number of mopeds.');
+      return;
+    }
+
+    const { totalTime: total, workerBreakdowns } = calculateTotalTime(
+      mopedsArray,
+      distancesNumberArray
+    );
     setTotalTime(total);
     setDetailedBreakdown(workerBreakdowns);
   };
+
+  useEffect(() => {
+    if (totalTime !== null) {
+      Swal.fire({
+        title: `Total Time: ${totalTime} minutes`,
+        text: 'Click OK to see the detailed breakdown.',
+        icon: 'success',
+      });
+    }
+  }, [totalTime]);
 
   const getColorForWorker = (workerName: string): string => {
     switch (workerName) {
@@ -73,129 +100,197 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
 
   return (
     <Box sx={{ flexGrow: 1, padding: '1rem' }}>
-      {/* Grid Container */}
-      <Grid container spacing={2}>
-        {/* Column 1: Image */}
-        <Grid item xs={12} md={4}>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            <img
-              src={TravelingImage}
-              alt="Traveling"
-              style={{ maxWidth: '100%', height: 'auto' }}
-            />
-          </Box>
-        </Grid>
-
-        {/* Column 2: Calculator */}
-        <Grid item xs={12} md={4}>
-          <Paper elevation={3} sx={{ padding: '1rem' }}>
-            <Typography variant="h4" gutterBottom align="center">
-              Task Time Calculator
-            </Typography>
-            <Typography variant="body1" gutterBottom align="center">
-              Calculate the total time for the group to complete the route.
-            </Typography>
-
-            <Paper elevation={1} sx={{ padding: '1rem', marginBottom: '1rem' }}>
-              <Typography variant="h6" gutterBottom>
-                Task Types:
+      <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+        {totalTime === null ? (
+          <Grid item xs={12} md={6}>
+            {/* Calculator */}
+            <Box sx={{ padding: '1rem', backgroundColor: 'white', boxShadow: 1 }}>
+              <Typography variant="h4" gutterBottom align="center">
+                Task Time Calculator
               </Typography>
-              <List dense>
-                <ListItem>
-                  <Typography variant="body1">
-                    <strong>S:</strong> Swap (1 minute)
-                  </Typography>
-                </ListItem>
-                <ListItem>
-                  <Typography variant="body1">
-                    <strong>F:</strong> Fix (5 minutes)
-                  </Typography>
-                </ListItem>
-                <ListItem>
-                  <Typography variant="body1">
-                    <strong>M:</strong> Mechanic repair (8 minutes)
-                  </Typography>
-                </ListItem>
-              </List>
-            </Paper>
-
-            <TextField
-              fullWidth
-              label="Mopeds (e.g., S,F,SF,FF)"
-              variant="outlined"
-              value={mopeds}
-              onChange={handleMopedsChange}
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              fullWidth
-              label="Distances in minutes (e.g., 2,4,3)"
-              variant="outlined"
-              value={distances}
-              onChange={handleDistancesChange}
-              sx={{ mb: 2 }}
-            />
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleCalculate}
-              fullWidth
-              size="large"
-            >
-              Calculate
-            </Button>
-
-            {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
-                {error}
+              <Typography variant="body1" gutterBottom align="center">
+                Calculate the total time for the group to complete the route.
               </Typography>
-            )}
-          </Paper>
-        </Grid>
 
-        {/* Column 3: Results and Breakdown */}
-        <Grid item xs={12} md={4}>
-          {totalTime !== null && detailedBreakdown && (
-            <Paper elevation={3} sx={{ padding: '1rem' }}>
-              <Typography variant="h5" sx={{ mb: 2 }} align="center">
-                Total Time: {totalTime} minutes
-              </Typography>
-              <Divider />
-              <div style={{ marginTop: '1rem' }}>
-                {detailedBreakdown.map((worker) => (
-                  <Accordion key={worker.workerName} defaultExpanded>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography
-                        variant="h6"
-                        style={{ color: getColorForWorker(worker.workerName) }}
-                      >
-                        {worker.workerName}: {worker.time} minutes
+              <Box
+                sx={{
+                  padding: '1rem',
+                  marginBottom: '1rem',
+                  backgroundColor: 'white',
+                  boxShadow: 1,
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  Task Types:
+                </Typography>
+                <List dense>
+                  <ListItem>
+                    <Typography variant="body1">
+                      <strong>S:</strong> Swap (1 minute)
+                    </Typography>
+                  </ListItem>
+                  <ListItem>
+                    <Typography variant="body1">
+                      <strong>F:</strong> Fix (5 minutes)
+                    </Typography>
+                  </ListItem>
+                  <ListItem>
+                    <Typography variant="body1">
+                      <strong>M:</strong> Mechanic repair (8 minutes)
+                    </Typography>
+                  </ListItem>
+                </List>
+              </Box>
+
+              <TextField
+                fullWidth
+                label="Mopeds (e.g., S, F, SF, FF)"
+                variant="outlined"
+                value={mopeds}
+                onChange={handleMopedsChange}
+                sx={{ mb: 2 }}
+              />
+
+              <TextField
+                fullWidth
+                label="Distances in minutes (e.g., 2, 4, 3)"
+                variant="outlined"
+                value={distances}
+                onChange={handleDistancesChange}
+                sx={{ mb: 2 }}
+              />
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleCalculate}
+                fullWidth
+                size="large"
+              >
+                Calculate
+              </Button>
+
+              {error && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {error}
+                </Typography>
+              )}
+            </Box>
+          </Grid>
+        ) : (
+          <>
+            <Grid item xs={12} md={6}>
+              {/* Calculator */}
+              <Box sx={{ padding: '1rem', backgroundColor: 'white', boxShadow: 1 }}>
+                <Typography variant="h4" gutterBottom align="center">
+                  Task Time Calculator
+                </Typography>
+                <Typography variant="body1" gutterBottom align="center">
+                  Calculate the total time for the group to complete the route.
+                </Typography>
+
+                <Box
+                  sx={{
+                    padding: '1rem',
+                    marginBottom: '1rem',
+                    backgroundColor: 'white',
+                    boxShadow: 1,
+                  }}
+                >
+                  <Typography variant="h6" gutterBottom>
+                    Task Types:
+                  </Typography>
+                  <List dense>
+                    <ListItem>
+                      <Typography variant="body1">
+                        <strong>S:</strong> Swap (1 minute)
                       </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <List>
-                        {worker.breakdownItems.map((item, index) => (
-                          <ListItem key={index}>
-                            <Typography variant="body1">{item.description}</Typography>
-                          </ListItem>
-                        ))}
-                      </List>
-                    </AccordionDetails>
-                  </Accordion>
-                ))}
-              </div>
-            </Paper>
-          )}
-        </Grid>
+                    </ListItem>
+                    <ListItem>
+                      <Typography variant="body1">
+                        <strong>F:</strong> Fix (5 minutes)
+                      </Typography>
+                    </ListItem>
+                    <ListItem>
+                      <Typography variant="body1">
+                        <strong>M:</strong> Mechanic repair (8 minutes)
+                      </Typography>
+                    </ListItem>
+                  </List>
+                </Box>
+
+                <TextField
+                  fullWidth
+                  label="Mopeds (e.g., S,F,SF,FF)"
+                  variant="outlined"
+                  value={mopeds}
+                  onChange={handleMopedsChange}
+                  sx={{ mb: 2 }}
+                />
+
+                <TextField
+                  fullWidth
+                  label="Distances in minutes (e.g., 2,4,3)"
+                  variant="outlined"
+                  value={distances}
+                  onChange={handleDistancesChange}
+                  sx={{ mb: 2 }}
+                />
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleCalculate}
+                  fullWidth
+                  size="large"
+                >
+                  Recalculate
+                </Button>
+
+                {error && (
+                  <Typography color="error" sx={{ mt: 2 }}>
+                    {error}
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {/* Results and Breakdown */}
+              <Box sx={{ padding: '1rem', backgroundColor: 'white', boxShadow: 1 }}>
+                <Typography variant="h5" sx={{ mb: 2 }} align="center">
+                  Total Time: {totalTime} minutes
+                </Typography>
+                <Divider />
+                <div style={{ marginTop: '1rem' }}>
+                  {detailedBreakdown?.map((worker) => (
+                    <Accordion key={worker.workerName}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+                        sx={{
+                          backgroundColor: getColorForWorker(worker.workerName),
+                          color: 'white',
+                        }}
+                      >
+                        <Typography variant="h6">
+                          {worker.workerName}: {worker.time} minutes
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <List>
+                          {worker.breakdownItems.map((item, index) => (
+                            <ListItem key={index}>
+                              <Typography variant="body1">{item.description}</Typography>
+                            </ListItem>
+                          ))}
+                        </List>
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                </div>
+              </Box>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Box>
   );

@@ -3,15 +3,18 @@ import './LandingPage.scss';
 import TravelingImage from '../../assets/undraw_traveling_yhxq.svg';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useTranslation, Trans } from 'react-i18next';
 
 const LandingPage: React.FC = () => {
+  const { t } = useTranslation();
+
   // Function to show the SweetAlert2 popup
   const showAlert = () => {
     Swal.fire({
-      title: 'Congratulations!',
-      text: 'You have claimed 50% off your next ride!',
+      title: t('landingPage.congratulations'),
+      text: t('landingPage.discountClaimed'),
       icon: 'success',
-      confirmButtonText: 'Awesome!',
+      confirmButtonText: t('landingPage.awesome'),
     });
   };
 
@@ -19,17 +22,25 @@ const LandingPage: React.FC = () => {
     <div className="landing-page">
       {/* Left Side: Content */}
       <div className="landing-page__content">
-        <h1>Welcome.</h1>
+        <h1>{t('landingPage.welcome')}</h1>
         <p>
-          Optimize your moped routes efficiently and save time with our advanced{' '}
-          <Link to="/task-time-calculator" className="landing-page__link">calculator</Link> tool.
+          <Trans i18nKey="landingPage.optimizeMopeds">
+            <Link to="/task-time-calculator" className="landing-page__link">
+              calculator
+            </Link>{' '}
+            tool.
+          </Trans>
         </p>
         <p>
-          Check out the cool neighbourhoods of Amsterdam with our{' '}
-          <Link to="/map" className="landing-page__link">map</Link> tool.
+          <Trans i18nKey="landingPage.checkOutMap">
+            <Link to="/map" className="landing-page__link">
+              calculator
+            </Link>{' '}
+            tool.
+          </Trans>
         </p>
         <p>
-          P.s. Can you find the secret discount on this page? 🙌
+          {t('landingPage.secretDiscount')} 🙌
         </p>
       </div>
 
@@ -42,10 +53,10 @@ const LandingPage: React.FC = () => {
             </div>
             <div className="card__back">
               <div className="card__back-content">
-                <p className="card__back-text">Well done!! You found the secret discount!!</p>
-                <p className="card__back-text">50% off your next ride</p>
+                <p className="card__back-text">{t('landingPage.wellDone')}</p>
+                <p className="card__back-text">{t('landingPage.discount')}</p>
                 <button className="card__back-button" onClick={showAlert}>
-                  Click me now
+                  {t('landingPage.click')}
                 </button>
               </div>
             </div>

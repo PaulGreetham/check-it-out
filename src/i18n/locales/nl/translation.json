@@ -1,4 +1,17 @@
 {
+  "landingPage": {
+    "welcome": "Welkom.",
+    "optimizeMopeds": "Optimaliseer je bromfietsroutes efficiënt en bespaar tijd met onze geavanceerde <0>calculator</0> tool.",
+    "checkOutMap": "Bekijk de leuke buurten van Amsterdam met onze <0>kaart</0> tool.",
+    "tool": "tool",
+    "secretDiscount": "P.s. Kun je de geheime korting op deze pagina vinden?",
+    "congratulations": "Gefeliciteerd!",
+    "discountClaimed": "Je hebt 50% korting op je volgende rit geclaimd!",
+    "awesome": "Geweldig!",
+    "wellDone": "Goed gedaan!! Je hebt de geheime korting gevonden!!",
+    "discount": "50% korting op je volgende rit",
+    "click": "Klik nu op mij"
+  },
   "navbar": {
     "home": "Thuis",
     "taskTimeCalculator": "Rekenmachine",

@@ -1,11 +1,8 @@
-/* Remove any variable imports since we're using hardcoded values */
-
-/* Define hardcoded colors */
 $color-white: #ffffff;
 $color-black: #000000;
 $color-grey-dark: #767676;
-$color-check: #9b3fff; /* Adjust to your preference */
-$color-primary-dark: #8f94fb;  /* Adjust to your preference */
+$color-check: #9b3fff;
+$color-primary-dark: #8f94fb;
 
 .landing-page {
   display: flex;
@@ -91,7 +88,7 @@ $color-primary-dark: #8f94fb;  /* Adjust to your preference */
             color: $color-white;
 
             .card__back-text {
-              font-size: 2.5rem;
+              font-size: 2rem;
               font-weight: 300;
               text-align: center;
               margin-bottom: 2rem;

@@ -1,4 +1,17 @@
 {
+  "landingPage": {
+    "welcome": "Welcome.",
+    "optimizeMopeds": "Optimize your moped routes efficiently and save time with our advanced <0>calculator</0> tool.",
+    "checkOutMap": "Check out the cool neighbourhoods of Amsterdam with our <0>map</0> tool.",
+    "tool": "tool",
+    "secretDiscount": "P.s. Can you find the secret discount on this page?",
+    "congratulations": "Congratulations!",
+    "discountClaimed": "You have claimed 50% off your next ride!",
+    "awesome": "Awesome!",
+    "wellDone": "Well done!! You found the secret discount!!",
+    "discount": "50% off your next ride",
+    "click": "Click me now"
+  },
   "navbar": {
     "home": "Home",
     "taskTimeCalculator": "Calculator",

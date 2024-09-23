@@ -19,7 +19,7 @@ const LanguageSwitcher: React.FC = () => {
     <Button
       color="inherit"
       onClick={toggleLanguage}
-      className="language-switcher-toggle"
+      className="navbar__button language-switcher-toggle"
     >
       <span
         className={`language-switcher__lang ${

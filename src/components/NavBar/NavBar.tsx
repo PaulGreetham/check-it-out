@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <AppBar position="static" className="navbar">
+    <AppBar position="static" className="navbar" elevation={0}>
       <Toolbar className="navbar__toolbar">
         <Link to="/" className="navbar__logo-link">
           <img src={Logo} alt="Check-logo" className="navbar__logo" />

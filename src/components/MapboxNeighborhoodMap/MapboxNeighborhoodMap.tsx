@@ -1,8 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import mapboxgl, { Map, AnyLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import './MapboxNeighborhoodMap.scss'; // Your custom styles
 import { FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 
+// **IMPORTANT:** Access token is now managed via environment variables.
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
 const MapboxNeighborhoodMap: React.FC = () => {
@@ -19,44 +21,46 @@ const MapboxNeighborhoodMap: React.FC = () => {
     );
   };
 
-  // Function to flip coordinates recursively from [lat, lng] to [lng, lat]
-  const flipCoordinates = (coords: any): any => {
+  // **Option 2: Using useCallback to memoize flipGeoJSON**
+  const flipCoordinates = useCallback((coords: any): any => {
     if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
       // [lat, lng] to [lng, lat]
       return [coords[1], coords[0]];
     } else {
       return coords.map((coord: any) => flipCoordinates(coord));
     }
-  };
+  }, []); // No dependencies, so it's memoized once
 
-  // Function to flip entire GeoJSON
-  const flipGeoJSON = (
-    geojson: FeatureCollection<Polygon | MultiPolygon>
-  ): FeatureCollection<Polygon | MultiPolygon> => {
-    return {
-      ...geojson,
-      features: geojson.features.map((feature) => ({
-        ...feature,
-        geometry: {
-          ...feature.geometry,
-          coordinates: flipCoordinates(feature.geometry.coordinates),
-        },
-      })),
-    };
-  };
+  const flipGeoJSON = useCallback(
+    (geojson: FeatureCollection<Polygon | MultiPolygon>): FeatureCollection<Polygon | MultiPolygon> => {
+      return {
+        ...geojson,
+        features: geojson.features.map((feature) => ({
+          ...feature,
+          geometry: {
+            ...feature.geometry,
+            coordinates: flipCoordinates(feature.geometry.coordinates),
+          },
+        })),
+      };
+    },
+    [flipCoordinates] // Dependency on flipCoordinates
+  );
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
+    // Initialize the map
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/light-v10',
-      center: [4.9041, 52.3676],
+      style: 'mapbox://styles/mapbox/light-v10', // You can change this to any desired style
+      center: [4.9041, 52.3676], // Initial center; will be adjusted to fit bounds
       zoom: 11,
     });
 
     mapRef.current = map;
 
+    // Add navigation controls to the top-right corner
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Initialize a popup but keep it hidden initially
@@ -65,7 +69,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
       closeOnClick: false,
     });
 
-    // Fetch the raw GeoJSON data
+    // Fetch and add GeoJSON data to the map
     map.on('load', async () => {
       try {
         const response = await fetch(
@@ -83,50 +87,48 @@ const MapboxNeighborhoodMap: React.FC = () => {
           firstFeature.geometry.coordinates[0].slice(0, 5)
         );
 
-        // Determine if flipping is needed based on the first coordinate's latitude
-        const firstCoord = firstFeature.geometry.coordinates[0][0];
-        if (isLngLat(firstCoord) && firstCoord[0] > 90) {
-          // Highly unlikely for latitude, so assume [lat, lng] and flip
-          console.log('Flipping GeoJSON coordinates from [lat, lng] to [lng, lat]...');
-          geojsonData = flipGeoJSON(geojsonData);
-          console.log('Coordinate flipping complete.');
-        } else {
-          // Additional check based on your data's console logs
-          // Since your data is in [lat, lng], flip regardless
-          console.log('Assuming GeoJSON coordinates are in [lat, lng] order. Flipping...');
-          geojsonData = flipGeoJSON(geojsonData);
-          console.log('Coordinate flipping complete.');
-        }
+        // Flip coordinates assuming they are in [lat, lng] order
+        console.log('Flipping GeoJSON coordinates from [lat, lng] to [lng, lat]...');
+        geojsonData = flipGeoJSON(geojsonData);
+        console.log('Coordinate flipping complete.');
 
         // Add source for the GeoJSON
-        map.addSource('amsterdam-neighbourhood', {
-          type: 'geojson',
-          data: geojsonData, // Use flipped data
-        });
+        if (map.getSource('amsterdam-neighbourhood')) {
+          (map.getSource('amsterdam-neighbourhood') as mapboxgl.GeoJSONSource).setData(geojsonData);
+        } else {
+          map.addSource('amsterdam-neighbourhood', {
+            type: 'geojson',
+            data: geojsonData,
+          });
+        }
 
         // Add a fill layer for neighborhoods
-        map.addLayer({
-          id: 'neighbourhood-fill',
-          type: 'fill',
-          source: 'amsterdam-neighbourhood',
-          layout: {},
-          paint: {
-            'fill-color': '#6C2DC7', // Check purple
-            'fill-opacity': 0.6,
-          },
-        } as AnyLayer);
+        if (!map.getLayer('neighbourhood-fill')) {
+          map.addLayer({
+            id: 'neighbourhood-fill',
+            type: 'fill',
+            source: 'amsterdam-neighbourhood',
+            layout: {},
+            paint: {
+              'fill-color': '#6C2DC7', // Check purple
+              'fill-opacity': 0.6,
+            },
+          } as AnyLayer);
+        }
 
         // Add a line layer for the polygon borders
-        map.addLayer({
-          id: 'neighbourhood-border',
-          type: 'line',
-          source: 'amsterdam-neighbourhood',
-          layout: {},
-          paint: {
-            'line-color': '#ffffff',
-            'line-width': 2,
-          },
-        } as AnyLayer);
+        if (!map.getLayer('neighbourhood-border')) {
+          map.addLayer({
+            id: 'neighbourhood-border',
+            type: 'line',
+            source: 'amsterdam-neighbourhood',
+            layout: {},
+            paint: {
+              'line-color': '#ffffff',
+              'line-width': 2,
+            },
+          } as AnyLayer);
+        }
 
         // Add interactivity: highlight on hover and show tooltip
         map.on('mousemove', 'neighbourhood-fill', (e) => {
@@ -174,10 +176,11 @@ const MapboxNeighborhoodMap: React.FC = () => {
       }
     });
 
+    // Clean up on unmount
     return () => {
       map.remove();
     };
-  }, []);
+  }, [flipGeoJSON]); // Include flipGeoJSON in dependencies
 
   return (
     <div

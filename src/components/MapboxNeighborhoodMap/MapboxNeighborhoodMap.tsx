@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import mapboxgl, { Map, AnyLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './MapboxNeighborhoodMap.scss'; // Your custom styles
 import { FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 
 // **IMPORTANT:** Access token is now managed via environment variables.

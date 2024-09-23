@@ -8,7 +8,7 @@ $color-primary-dark: #8f94fb;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: $color-white;
+  background-color: 'theme.palette.text.background';
   height: 90vh;
   padding: 4rem;
 
@@ -67,7 +67,7 @@ $color-primary-dark: #8f94fb;
         }
 
         .card__front {
-          background-color: $color-white;
+          background-color: 'theme.palette.text.background';
 
           .card__image {
             width: 100%;

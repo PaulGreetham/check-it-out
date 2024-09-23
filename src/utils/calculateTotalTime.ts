@@ -1,15 +1,17 @@
 import { WorkerBreakdown, WorkerBreakdownItem, TotalTimeResult } from '../types/components';
+import { TFunction } from 'i18next';
 
 export function calculateTotalTime(
   mopedsArray: string[],
-  distancesArray: number[]
+  distancesArray: number[],
+  t: TFunction // Pass `t` for translation
 ): TotalTimeResult {
   const taskTimes: Record<string, number> = { S: 1, F: 5, M: 8 };
 
   const workers = [
-    { code: 'S', name: 'Swapper', color: '#4caf50' },
-    { code: 'F', name: 'Fixer', color: '#ff9800' },
-    { code: 'M', name: 'Mechanic', color: '#f44336' },
+    { code: 'S', name: t('taskTimeCalculator.swapper'), color: '#4caf50' },
+    { code: 'F', name: t('taskTimeCalculator.fixer'), color: '#ff9800' },
+    { code: 'M', name: t('taskTimeCalculator.mechanic'), color: '#f44336' },
   ];
 
   const workerBreakdowns: WorkerBreakdown[] = [];
@@ -37,7 +39,7 @@ export function calculateTotalTime(
           time += taskTime;
           breakdownItems.push({
             type: 'task',
-            description: `Moped ${i + 1}: Performs ${numTasks} task(s) (${taskTime} minutes)`,
+            description: t('taskTimeCalculator.utils.taskDescription', { index: i + 1, numTasks, taskTime }),
           });
         }
 
@@ -47,14 +49,14 @@ export function calculateTotalTime(
           time += travelTime;
           breakdownItems.push({
             type: 'travel',
-            description: `Travel from moped ${i + 1} to moped ${i + 2} (${travelTime} minutes)`,
+            description: t('taskTimeCalculator.utils.travelDescription', { from: i + 1, to: i + 2, travelTime }),
           });
         }
       }
     } else {
       breakdownItems.push({
         type: 'no-tasks',
-        description: 'No tasks assigned.',
+        description: t('taskTimeCalculator.utils.noTasks'),
       });
     }
 

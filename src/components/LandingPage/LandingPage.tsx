@@ -4,9 +4,11 @@ import TravelingImage from '../../assets/undraw_traveling_yhxq.svg';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useTranslation, Trans } from 'react-i18next';
+import { useTheme } from '@mui/material/styles';
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   // Function to show the SweetAlert2 popup
   const showAlert = () => {
@@ -15,6 +17,7 @@ const LandingPage: React.FC = () => {
       text: t('landingPage.discountClaimed'),
       icon: 'success',
       confirmButtonText: t('landingPage.awesome'),
+      background: theme.palette.background.paper,
     });
   };
 

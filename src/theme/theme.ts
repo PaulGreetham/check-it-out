@@ -74,7 +74,7 @@ export const darkTheme = createTheme({
       main: checkWhite,
     },
     background: {
-      default: checkBlack,  // Dark mode background
+      default: '#1E1E1E',  // Dark mode background
       paper: '#1e1e1e',     // Dark background for paper components
     },
     text: {

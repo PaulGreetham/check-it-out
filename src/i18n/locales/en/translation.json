@@ -20,11 +20,36 @@
     "lightMode": "Light"
   },
   "taskTimeCalculator": {
-    "welcome": "Welcome to the Task Time Calculator",
-    "explanation": "Input the tasks for each moped and the travel times to calculate the total time needed. The team consists of Swappers, Fixers, and Mechanics. A Swapper replaces batteries (1 minute), a Fixer performs small repairs (5 minutes), and a Mechanic performs major repairs (8 minutes).",
+    "swapper": "Swapper",
+    "fixer": "Fixer",
+    "mechanic": "Mechanic",
+    "utils": {
+      "taskDescription": "Moped {{index}}: Performs {{numTasks}} task(s) ({{taskTime}} minutes)",
+      "travelDescription": "Travel from moped {{from}} to moped {{to}} ({{travelTime}} minutes)",
+      "noTasks": "No tasks assigned."
+    },
+    "title": "Task Time Calculator",
+    "explanation": "Input the tasks for each moped and the travel times to calculate the total time needed.",
+    "taskTypes": "Task Types:",
+    "swap": "Swap (1 minute)",
+    "fix": "Fix (5 minutes)",
+    "mechanicRepair": "Mechanic repair (8 minutes)",
     "mopedsLabel": "Mopeds (tasks separated by commas, e.g., S, F, SF, M)",
     "distancesLabel": "Distances (in minutes, separated by commas)",
     "calculate": "Calculate",
-    "totalTime": "Total Time: {{time}} minutes"
+    "recalculate": "Recalculate",
+    "totalTime": "Total Time: {{time}} minutes",
+    "minutes": "minutes",
+    "invalidMoped": "Invalid moped entry: \"{{moped}}\". Only letters S, F, M are allowed.",
+    "invalidDistance": "Invalid distance entry: \"{{distance}}\". Only numbers are allowed.",
+    "distanceError": "The number of distances should be one less than the number of mopeds.",
+    "successMessage": "Click OK to see the detailed breakdown of the calculation on the right.",
+    "tooltipDescription1": "At Check, we have a workforce on the street that consists of Swappers, Fixers, and Mechanics. These employees have scheduled shifts in which they perform specific tasks for our vehicles. Swappers replace the batteries of mopeds, Fixers do small fixes on mopeds, and Mechanics do the bigger repairs.",
+    "tooltipDescription2": "We would like to know how many minutes it would take a group containing a Swapper, a Fixer, and a Mechanic to finish a predetermined route.",
+    "tooltipDescription3": "You will be given two arrays of data:",
+    "tooltipDescription4": "1) The first array is a list of mopeds. Each moped consists of a string of characters: S, F, or M. Each character represents a task that needs to be performed for that vehicle: S for swapping a battery, F for a small fix, and M for a big repair.",
+    "tooltipDescription5": "2) The second array is a list of distances in minutes between the mopeds. So, distance[0] is the distance between mopeds[0] and mopeds[1], distance[1] is the distance between mopeds[1] and mopeds[2], and so on.",
+    "tooltipDescription6": "It's a given that a swap takes 1 minute, a small fix takes 5 minutes, and a big repair takes 8 minutes.",
+    "tooltipDescription7": "Each employee needs to follow the route in the given order. However, they don't always need to perform a task at every moped. An employee shouldn't continue their route if there are no tasks left for them to do."
   }
 }

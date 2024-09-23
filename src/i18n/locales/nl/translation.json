@@ -20,11 +20,36 @@
     "lightMode": "Lichte"
   },
   "taskTimeCalculator": {
-    "welcome": "Welkom bij de Tijdcalculator voor Taken",
-    "explanation": "Voer de taken voor elke bromfiets en de reistijden in om de totale benodigde tijd te berekenen. Het team bestaat uit Swappers, Fixers en Mechanici. Een Swapper vervangt batterijen (1 minuut), een Fixer voert kleine reparaties uit (5 minuten) en een Mechanicus doet grote reparaties (8 minuten).",
-    "mopedsLabel": "Bromfietsen (taken gescheiden door komma's, bijvoorbeeld S, F, SF, M)",
+    "swapper": "Wisselaar",
+    "fixer": "Reparateur",
+    "mechanic": "Monteur",
+    "utils": {
+      "taskDescription": "Bromfiets {{index}}: Voert {{numTasks}} taak/taken uit ({{taskTime}} minuten)",
+      "travelDescription": "Reis van bromfiets {{from}} naar bromfiets {{to}} ({{travelTime}} minuten)",
+      "noTasks": "Geen toegewezen taken."
+    },
+    "title": "Tijdcalculator voor Taken",
+    "explanation": "Voer de taken voor elke bromfiets en de reistijden in om de totale benodigde tijd te berekenen.",
+    "taskTypes": "Taaksoorten:",
+    "swap": "Wisselen (1 minuut)",
+    "fix": "Repareren (5 minuten)",
+    "mechanicRepair": "Mechanische reparatie (8 minuten)",
+    "mopedsLabel": "Bromfietsen (taken gescheiden door komma's, bijv. S, F, SF, M)",
     "distancesLabel": "Afstanden (in minuten, gescheiden door komma's)",
     "calculate": "Berekenen",
-    "totalTime": "Totale tijd: {{time}} minuten"
+    "recalculate": "Opnieuw berekenen",
+    "totalTime": "Totale tijd: {{time}} minuten",
+    "minutes": "minuten",
+    "invalidMoped": "Ongeldige bromfiets invoer: \"{{moped}}\". Alleen de letters S, F, M zijn toegestaan.",
+    "invalidDistance": "Ongeldige afstand invoer: \"{{distance}}\". Alleen nummers zijn toegestaan.",
+    "distanceError": "Het aantal afstanden moet één minder zijn dan het aantal bromfietsen.",
+    "successMessage": "Klik op OK om de gedetailleerde berekening aan de rechterkant te zien.",
+    "tooltipDescription1": "Bij Check hebben we een team op straat dat bestaat uit Swappers, Fixers en Mechanici. Deze werknemers hebben geplande diensten waarin ze specifieke taken voor onze voertuigen uitvoeren. Swappers vervangen de batterijen van bromfietsen, Fixers doen kleine reparaties en Mechanici voeren de grotere reparaties uit.",
+    "tooltipDescription2": "We willen weten hoeveel minuten het zou duren voor een groep bestaande uit een Swapper, een Fixer en een Mechanicus om een vooraf bepaalde route af te leggen.",
+    "tooltipDescription3": "Je krijgt twee arrays met gegevens:",
+    "tooltipDescription4": "1) De eerste array is een lijst met bromfietsen. Elke bromfiets bestaat uit een reeks karakters: S, F of M. Elk karakter vertegenwoordigt een taak die moet worden uitgevoerd voor dat voertuig: S voor het wisselen van een batterij, F voor een kleine reparatie en M voor een grote reparatie.",
+    "tooltipDescription5": "2) De tweede array is een lijst met afstanden in minuten tussen de bromfietsen. Dus, afstand[0] is de afstand tussen bromfietsen[0] en bromfietsen[1], afstand[1] is de afstand tussen bromfietsen[1] en bromfietsen[2], enzovoort.",
+    "tooltipDescription6": "Het is gegeven dat een wisseling 1 minuut duurt, een kleine reparatie 5 minuten en een grote reparatie 8 minuten.",
+    "tooltipDescription7": "Elke werknemer moet de route in de gegeven volgorde volgen. Ze hoeven echter niet bij elke bromfiets een taak uit te voeren. Een werknemer moet zijn route niet voortzetten als er geen taken meer voor hem zijn."
   }
 }

@@ -17,14 +17,14 @@ const Navbar: React.FC = () => {
         <Link to="/" className="navbar__logo-link">
           <img src={Logo} alt="Check-logo" className="navbar__logo" />
         </Link>
-        <Button
+        {/* <Button
           color="inherit"
           component={Link}
           to="/"
           className="navbar__button" // using addiotional class to overrue MUI styling, incase you were wondering
         >
           {t('navbar.home')}
-        </Button>
+        </Button> */}
         <Button
           color="inherit"
           component={Link}

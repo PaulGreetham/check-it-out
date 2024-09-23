@@ -1,24 +1,12 @@
 // src/components/TaskTimeCalculator.tsx
 
 import React, { useState, useEffect } from 'react';
-import {
-  TextField,
-  Button,
-  Typography,
-  List,
-  ListItem,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Grid,
-  Divider,
-  Box,
-  Tooltip,
-} from '@mui/material';
+import { TextField, Button, Typography, List, ListItem, Accordion, AccordionSummary, AccordionDetails, Grid, Divider, Box, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 import { TaskTimeCalculatorProps, WorkerBreakdown } from '../../types/components';
 import { calculateTotalTime } from '../../utils/calculateTotalTime';
 
@@ -27,8 +15,8 @@ const DarkTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .MuiTooltip-tooltip`]: {
-    backgroundColor: '#333', // Darker background
-    color: 'white', // White text
+    backgroundColor: '#333',
+    color: 'theme.palette.text.primary',
     fontSize: theme.typography.pxToRem(12),
     maxWidth: 300,
   },
@@ -38,6 +26,7 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
   initialMopeds = '',
   initialDistances = '',
 }) => {
+  const { t } = useTranslation();
   const [mopeds, setMopeds] = useState<string>(initialMopeds);
   const [distances, setDistances] = useState<string>(initialDistances);
   const [totalTime, setTotalTime] = useState<number | null>(null);
@@ -63,14 +52,14 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
     // Validation for mopeds input
     const invalidMoped = mopedsArray.find((moped) => !/^[SFM]+$/i.test(moped));
     if (invalidMoped) {
-      setError(`Invalid moped entry: "${invalidMoped}". Only letters S, F, M are allowed.`);
+      setError(t('taskTimeCalculator.invalidMoped', { moped: invalidMoped }));
       return;
     }
 
     // Validation for distances input
     const invalidDistance = distancesArray.find((distance) => !/^\d+$/.test(distance));
     if (invalidDistance) {
-      setError(`Invalid distance entry: "${invalidDistance}". Only numbers are allowed.`);
+      setError(t('taskTimeCalculator.invalidDistance', { distance: invalidDistance }));
       return;
     }
 
@@ -78,14 +67,11 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
     const distancesNumberArray = distancesArray.map((d) => parseInt(d, 10));
 
     if (distancesNumberArray.length !== mopedsArray.length - 1) {
-      setError('The number of distances should be one less than the number of mopeds.');
+      setError(t('taskTimeCalculator.distanceError'));
       return;
     }
 
-    const { totalTime: total, workerBreakdowns } = calculateTotalTime(
-      mopedsArray,
-      distancesNumberArray
-    );
+    const { totalTime: total, workerBreakdowns } = calculateTotalTime(mopedsArray, distancesNumberArray, t);
     setTotalTime(total);
     setDetailedBreakdown(workerBreakdowns);
   };
@@ -93,12 +79,12 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
   useEffect(() => {
     if (totalTime !== null) {
       Swal.fire({
-        title: `Total Time: ${totalTime} minutes`,
-        text: 'Click OK to see the detailed breakdown of the calculation on the right.',
+        title: t('taskTimeCalculator.totalTime', { time: totalTime }),
+        text: t('taskTimeCalculator.successMessage'),
         icon: 'success',
       });
     }
-  }, [totalTime]);
+  }, [totalTime, t]);
 
   const getColorForWorker = (workerName: string): string => {
     switch (workerName) {
@@ -116,41 +102,25 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
   const tooltipContent = (
     <Box>
       <Typography variant="body2" gutterBottom>
-        At Check, we have a workforce on the street that consists of <strong>Swappers</strong>,{' '}
-        <strong>Fixers</strong>, and <strong>Mechanics</strong>. These employees have scheduled
-        shifts in which they perform specific tasks for our vehicles. <strong>Swappers</strong>{' '}
-        replace the batteries of mopeds, <strong>Fixers</strong> do small fixes on mopeds, and{' '}
-        <strong>Mechanics</strong> do the bigger repairs.
+        {t('taskTimeCalculator.tooltipDescription1')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        We would like to know how many minutes it would take a group containing a{' '}
-        <strong>Swapper</strong>, a <strong>Fixer</strong>, and a <strong>Mechanic</strong> to
-        finish a predetermined route.
+        {t('taskTimeCalculator.tooltipDescription2')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        You will be given two arrays of data:
+        {t('taskTimeCalculator.tooltipDescription3')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        1) The first array is a list of mopeds. Each moped consists of a string of characters:{' '}
-        <code>S</code>, <code>F</code>, or <code>M</code>. Each character represents a task that
-        needs to be performed for that vehicle: <code>S</code> for swapping a battery, <code>F</code>{' '}
-        for a small fix, and <code>M</code> for a big repair.
+        {t('taskTimeCalculator.tooltipDescription4')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        2) The second array is a list of distances in minutes between the mopeds. So,{' '}
-        <code>distance[0]</code> is the distance between <code>mopeds[0]</code> and{' '}
-        <code>mopeds[1]</code>, <code>distance[1]</code> is the distance between{' '}
-        <code>mopeds[1]</code> and <code>mopeds[2]</code>, and so on.
+        {t('taskTimeCalculator.tooltipDescription5')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        It's a given that a <strong>swap</strong> takes <em>1 minute</em>, a{' '}
-        <strong>small fix</strong> takes <em>5 minutes</em>, and a <strong>big repair</strong> takes{' '}
-        <em>8 minutes</em>.
+        {t('taskTimeCalculator.tooltipDescription6')}
       </Typography>
       <Typography variant="body2" gutterBottom>
-        Each employee needs to follow the route in the given order. However, they don't always need
-        to perform a task at every moped. An employee shouldn't continue their route if there are no
-        tasks left for them to do.
+        {t('taskTimeCalculator.tooltipDescription7')}
       </Typography>
     </Box>
   );
@@ -160,205 +130,76 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
       <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
         {totalTime === null ? (
           <Grid item xs={12} md={6}>
-            {/* Calculator */}
-            <Box sx={{ padding: '1rem', backgroundColor: 'white', boxShadow: 1, }}>
+            <Box sx={{ padding: '1rem', backgroundColor: 'theme.palette.text.background', boxShadow: 1 }}>
               <Box display="flex" alignItems="baseline" justifyContent="center">
-                <Typography variant="h4" gutterBottom>
-                  Task Time Calculator
-                </Typography>
+                <Typography variant="h4" gutterBottom>{t('taskTimeCalculator.title')}</Typography>
                 <DarkTooltip title={tooltipContent} placement="right-start">
-                  <InfoOutlinedIcon
-                    sx={(theme) => ({
-                      ml: 1,
-                      cursor: 'pointer',
-                      fontSize: theme.typography.h4.fontSize, // Match icon size to header
-                    })}
-                  />
+                  <InfoOutlinedIcon sx={(theme) => ({ ml: 1, cursor: 'pointer', fontSize: theme.typography.h4.fontSize })} />
                 </DarkTooltip>
               </Box>
-              <Typography variant="body1" gutterBottom align="center">
-                Calculate the total time for the group to complete the route.
-              </Typography>
+              <Typography variant="body1" gutterBottom align="center">{t('taskTimeCalculator.explanation')}</Typography>
 
-              <Box
-                sx={{
-                  padding: '1rem',
-                  marginBottom: '1rem',
-                  backgroundColor: 'white',
-                  shadow: 1,
-                }}
-              >
-                <Typography variant="h6" gutterBottom>
-                  Task Types:
-                </Typography>
+              <Box sx={{ padding: '1rem', marginBottom: '1rem', backgroundColor: 'theme.palette.text.background', shadow: 1 }}>
+                <Typography variant="h6" gutterBottom>{t('taskTimeCalculator.taskTypes')}</Typography>
                 <List dense>
-                  <ListItem>
-                    <Typography variant="body1">
-                      <strong>S:</strong> Swap (1 minute)
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <Typography variant="body1">
-                      <strong>F:</strong> Fix (5 minutes)
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <Typography variant="body1">
-                      <strong>M:</strong> Mechanic repair (8 minutes)
-                    </Typography>
-                  </ListItem>
+                  <ListItem><Typography variant="body1"><strong>S:</strong> {t('taskTimeCalculator.swap')}</Typography></ListItem>
+                  <ListItem><Typography variant="body1"><strong>F:</strong> {t('taskTimeCalculator.fix')}</Typography></ListItem>
+                  <ListItem><Typography variant="body1"><strong>M:</strong> {t('taskTimeCalculator.mechanic')}</Typography></ListItem>
                 </List>
               </Box>
 
-              <TextField
-                fullWidth
-                label="Mopeds (e.g., S, F, SF, FF)"
-                variant="outlined"
-                value={mopeds}
-                onChange={handleMopedsChange}
-                sx={{ mb: 2 }}
-              />
+              <TextField fullWidth label={t('taskTimeCalculator.mopedsLabel')} variant="outlined" value={mopeds} onChange={handleMopedsChange} sx={{ mb: 2 }} />
+              <TextField fullWidth label={t('taskTimeCalculator.distancesLabel')} variant="outlined" value={distances} onChange={handleDistancesChange} sx={{ mb: 2 }} />
 
-              <TextField
-                fullWidth
-                label="Distances in minutes (e.g., 2, 4, 3)"
-                variant="outlined"
-                value={distances}
-                onChange={handleDistancesChange}
-                sx={{ mb: 2 }}
-              />
+              <Button variant="contained" color="primary" onClick={handleCalculate} fullWidth size="large">{t('taskTimeCalculator.calculate')}</Button>
 
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleCalculate}
-                fullWidth
-                size="large"
-              >
-                Calculate
-              </Button>
-
-              {error && (
-                <Typography color="error" sx={{ mt: 2 }}>
-                  {error}
-                </Typography>
-              )}
+              {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
             </Box>
           </Grid>
         ) : (
           <>
             <Grid item xs={12} md={6}>
-              {/* Calculator */}
-              <Box sx={{ padding: '1rem', backgroundColor: 'white', boxShadow: 1, }}>
+              <Box sx={{ padding: '1rem', backgroundColor: 'theme.palette.text.background', boxShadow: 1 }}>
                 <Box display="flex" alignItems="baseline" justifyContent="center">
-                  <Typography variant="h4" gutterBottom>
-                    Task Time Calculator
-                  </Typography>
+                  <Typography variant="h4" gutterBottom>{t('taskTimeCalculator.title')}</Typography>
                   <DarkTooltip title={tooltipContent} placement="right-start">
-                    <InfoOutlinedIcon
-                      sx={(theme) => ({
-                        ml: 1,
-                        cursor: 'pointer',
-                        fontSize: theme.typography.h4.fontSize, // Match icon size to header
-                      })}
-                    />
+                    <InfoOutlinedIcon sx={(theme) => ({ ml: 1, cursor: 'pointer', fontSize: theme.typography.h4.fontSize })} />
                   </DarkTooltip>
                 </Box>
-                <Typography variant="body1" gutterBottom align="center">
-                  Calculate the total time for the group to complete the route.
-                </Typography>
+                <Typography variant="body1" gutterBottom align="center">{t('taskTimeCalculator.explanation')}</Typography>
 
-                <Box
-                  sx={{
-                    padding: '1rem',
-                    marginBottom: '1rem',
-                    backgroundColor: 'white',
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    Task Types:
-                  </Typography>
+                <Box sx={{ padding: '1rem', marginBottom: '1rem', backgroundColor: 'theme.palette.text.background' }}>
+                  <Typography variant="h6" gutterBottom>{t('taskTimeCalculator.taskTypes')}</Typography>
                   <List dense>
-                    <ListItem>
-                      <Typography variant="body1">
-                        <strong>S:</strong> Swap (1 minute)
-                      </Typography>
-                    </ListItem>
-                    <ListItem>
-                      <Typography variant="body1">
-                        <strong>F:</strong> Fix (5 minutes)
-                      </Typography>
-                    </ListItem>
-                    <ListItem>
-                      <Typography variant="body1">
-                        <strong>M:</strong> Mechanic repair (8 minutes)
-                      </Typography>
-                    </ListItem>
+                    <ListItem><Typography variant="body1"><strong>S:</strong> {t('taskTimeCalculator.swap')}</Typography></ListItem>
+                    <ListItem><Typography variant="body1"><strong>F:</strong> {t('taskTimeCalculator.fix')}</Typography></ListItem>
+                    <ListItem><Typography variant="body1"><strong>M:</strong> {t('taskTimeCalculator.mechanic')}</Typography></ListItem>
                   </List>
                 </Box>
 
-                <TextField
-                  fullWidth
-                  label="Mopeds (e.g., S, F, SF, FF)"
-                  variant="outlined"
-                  value={mopeds}
-                  onChange={handleMopedsChange}
-                  sx={{ mb: 2 }}
-                />
+                <TextField fullWidth label={t('taskTimeCalculator.mopedsLabel')} variant="outlined" value={mopeds} onChange={handleMopedsChange} sx={{ mb: 2 }} />
+                <TextField fullWidth label={t('taskTimeCalculator.distancesLabel')} variant="outlined" value={distances} onChange={handleDistancesChange} sx={{ mb: 2 }} />
 
-                <TextField
-                  fullWidth
-                  label="Distances in minutes (e.g., 2, 4, 3)"
-                  variant="outlined"
-                  value={distances}
-                  onChange={handleDistancesChange}
-                  sx={{ mb: 2 }}
-                />
+                <Button variant="contained" color="primary" onClick={handleCalculate} fullWidth size="large">{t('taskTimeCalculator.recalculate')}</Button>
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleCalculate}
-                  fullWidth
-                  size="large"
-                >
-                  Recalculate
-                </Button>
-
-                {error && (
-                  <Typography color="error" sx={{ mt: 2 }}>
-                    {error}
-                  </Typography>
-                )}
+                {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
               </Box>
             </Grid>
+
             <Grid item xs={12} md={6}>
-              {/* Results and Breakdown */}
-              <Box sx={{ padding: '1rem', backgroundColor: 'white', boxShadow: 1, }}>
-                <Typography variant="h5" sx={{ mb: 2 }} align="center">
-                  Total Time: {totalTime} minutes
-                </Typography>
+              <Box sx={{ padding: '1rem', backgroundColor: 'theme.palette.text.background', boxShadow: 1 }}>
+                <Typography variant="h5" sx={{ mb: 2 }} align="center">{t('taskTimeCalculator.totalTime', { time: totalTime })}</Typography>
                 <Divider />
                 <div style={{ marginTop: '1rem' }}>
                   {detailedBreakdown?.map((worker) => (
                     <Accordion key={worker.workerName}>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-                        sx={{
-                          backgroundColor: getColorForWorker(worker.workerName),
-                          color: 'white',
-                        }}
-                      >
-                        <Typography variant="h6">
-                          {worker.workerName}: {worker.time} minutes
-                        </Typography>
+                      <AccordionSummary expandIcon={<ExpandMoreIcon style={{ color: 'theme.palette.text.background' }} />} sx={{ backgroundColor: getColorForWorker(worker.workerName), color: 'white' }}>
+                        <Typography variant="h6">{worker.workerName}: {worker.time} {t('taskTimeCalculator.minutes')}</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
                         <List>
                           {worker.breakdownItems.map((item, index) => (
-                            <ListItem key={index}>
-                              <Typography variant="body1">{item.description}</Typography>
-                            </ListItem>
+                            <ListItem key={index}><Typography variant="body1">{item.description}</Typography></ListItem>
                           ))}
                         </List>
                       </AccordionDetails>

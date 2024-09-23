@@ -1,193 +1,192 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
+import React, { useRef, useEffect } from 'react';
+import mapboxgl, { Map, AnyLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import axios from 'axios';
-import './MapboxNeighborhoodMap.scss';
+import { FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 
-// Set your Mapbox access token
+// **IMPORTANT:** Replace the string below with your actual Mapbox access token.
 mapboxgl.accessToken = 'pk.eyJ1IjoicGF1bGdyZWV0aGFtIiwiYSI6ImNtMWIzOXVyZTF3amQyd3NianB5ZnZyOTMifQ.1EbyJg4L9zaOvmZYyrPtVA';
 
 const MapboxNeighborhoodMap: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const [geoData, setGeoData] = useState<any>(null);
+  const mapRef = useRef<Map | null>(null);
 
-  // Function to assign unique IDs to each feature
-  const processGeoJSON = (data: any) => {
+  // Type guard to check if a coordinate is [number, number]
+  const isLngLat = (coord: any): coord is [number, number] => {
+    return (
+      Array.isArray(coord) &&
+      coord.length === 2 &&
+      typeof coord[0] === 'number' &&
+      typeof coord[1] === 'number'
+    );
+  };
+
+  // Function to flip coordinates recursively from [lat, lng] to [lng, lat]
+  const flipCoordinates = (coords: any): any => {
+    if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+      // [lat, lng] to [lng, lat]
+      return [coords[1], coords[0]];
+    } else {
+      return coords.map((coord: any) => flipCoordinates(coord));
+    }
+  };
+
+  // Function to flip entire GeoJSON
+  const flipGeoJSON = (
+    geojson: FeatureCollection<Polygon | MultiPolygon>
+  ): FeatureCollection<Polygon | MultiPolygon> => {
     return {
-      ...data,
-      features: data.features.map((feature: any, index: number) => ({
+      ...geojson,
+      features: geojson.features.map((feature) => ({
         ...feature,
-        id: index,
+        geometry: {
+          ...feature.geometry,
+          coordinates: flipCoordinates(feature.geometry.coordinates),
+        },
       })),
     };
   };
 
-  // Fetch GeoJSON data from the API
-  const fetchGeoJSON = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        'https://maps.amsterdam.nl/open_geodata/geojson_latlng.php?KAARTLAAG=INDELING_BUURT&THEMA=gebiedsindeling'
-      );
-      console.log('Fetched GeoJSON data:', response.data);
-      const dataWithIDs = processGeoJSON(response.data);
-      setGeoData(dataWithIDs);
-    } catch (error) {
-      console.error('Error fetching GeoJSON:', error);
-    }
-  }, []);
-
-  // Initialize the map (runs once)
   useEffect(() => {
-    if (mapContainerRef.current && !mapRef.current) {
-      mapRef.current = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/light-v10',
-        center: [4.9041, 52.3676],
-        zoom: 11,
-      });
-    }
+    if (!mapContainerRef.current) return;
+
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: 'mapbox://styles/mapbox/light-v10',
+      center: [4.9041, 52.3676], // Initial center; will be adjusted to fit bounds
+      zoom: 11,
+    });
+
+    mapRef.current = map;
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Initialize a popup but keep it hidden initially
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+    });
+
+    // Fetch the raw GeoJSON data
+    map.on('load', async () => {
+      try {
+        const response = await fetch(
+          'https://maps.amsterdam.nl/open_geodata/geojson_latlng.php?KAARTLAAG=INDELING_BUURT&THEMA=gebiedsindeling'
+        );
+        let geojsonData: FeatureCollection<Polygon | MultiPolygon> = await response.json();
+
+        console.log('Fetched GeoJSON data:', geojsonData);
+
+        // Inspect the first feature's coordinates
+        const firstFeature = geojsonData.features[0];
+        console.log('First Feature Geometry Type:', firstFeature.geometry.type);
+        console.log(
+          'First Feature Coordinates (First Ring, first 5 coords):',
+          firstFeature.geometry.coordinates[0].slice(0, 5)
+        );
+
+        // Determine if flipping is needed based on the first coordinate's latitude
+        const firstCoord = firstFeature.geometry.coordinates[0][0];
+        if (isLngLat(firstCoord) && firstCoord[0] > 90) {
+          // Highly unlikely for latitude, so assume [lat, lng] and flip
+          console.log('Flipping GeoJSON coordinates from [lat, lng] to [lng, lat]...');
+          geojsonData = flipGeoJSON(geojsonData);
+          console.log('Coordinate flipping complete.');
+        } else {
+          // Additional check based on your data's console logs
+          // Since your data is in [lat, lng], flip regardless
+          console.log('Assuming GeoJSON coordinates are in [lat, lng] order. Flipping...');
+          geojsonData = flipGeoJSON(geojsonData);
+          console.log('Coordinate flipping complete.');
+        }
+
+        // Add source for the GeoJSON
+        map.addSource('amsterdam-neighbourhood', {
+          type: 'geojson',
+          data: geojsonData, // Use flipped data
+        });
+
+        // Add a fill layer for neighborhoods
+        map.addLayer({
+          id: 'neighbourhood-fill',
+          type: 'fill',
+          source: 'amsterdam-neighbourhood',
+          layout: {},
+          paint: {
+            'fill-color': '#6C2DC7', // Check purple
+            'fill-opacity': 0.6,
+          },
+        } as AnyLayer);
+
+        // Add a line layer for the polygon borders
+        map.addLayer({
+          id: 'neighbourhood-border',
+          type: 'line',
+          source: 'amsterdam-neighbourhood',
+          layout: {},
+          paint: {
+            'line-color': '#ffffff',
+            'line-width': 2,
+          },
+        } as AnyLayer);
+
+        // Add interactivity: highlight on hover and show tooltip
+        map.on('mousemove', 'neighbourhood-fill', (e) => {
+          if (e.features && e.features.length > 0) {
+            const feature = e.features[0];
+            map.getCanvas().style.cursor = 'pointer';
+
+            // Set popup content
+            const buurtName = feature.properties?.Buurt || 'Unknown';
+            popup
+              .setLngLat(e.lngLat)
+              .setHTML(`<strong>${buurtName}</strong>`)
+              .addTo(map);
+          }
+        });
+
+        map.on('mouseleave', 'neighbourhood-fill', () => {
+          map.getCanvas().style.cursor = '';
+          popup.remove();
+        });
+
+        // Fit map to the GeoJSON bounds
+        const bounds = new mapboxgl.LngLatBounds();
+        geojsonData.features.forEach((feature) => {
+          const geometry = feature.geometry;
+          if (geometry.type === 'Polygon') {
+            geometry.coordinates[0].forEach((coord) => {
+              if (isLngLat(coord)) {
+                bounds.extend(coord);
+              }
+            });
+          } else if (geometry.type === 'MultiPolygon') {
+            geometry.coordinates.forEach((polygon) => {
+              polygon[0].forEach((coord) => {
+                if (isLngLat(coord)) {
+                  bounds.extend(coord);
+                }
+              });
+            });
+          }
+        });
+        map.fitBounds(bounds, { padding: 20 });
+      } catch (error) {
+        console.error('Error fetching or adding GeoJSON data:', error);
+      }
+    });
 
     return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
+      map.remove();
     };
-  }, []); // Empty dependency array ensures this runs once
-
-  // Add layers and event handlers when geoData is available
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !geoData) return;
-
-    const addLayers = () => {
-      if (map.getSource('neighborhoods')) {
-        return; // Layers already added
-      }
-
-      // Find the first symbol layer
-      const layers = map.getStyle()!.layers;
-      let firstSymbolId;
-      for (const layer of layers) {
-        if (layer.type === 'symbol') {
-          firstSymbolId = layer.id;
-          break;
-        }
-      }
-
-      map.addSource('neighborhoods', {
-        type: 'geojson',
-        data: geoData,
-      });
-
-      map.addLayer(
-        {
-          id: 'neighborhoods-fill',
-          type: 'fill',
-          source: 'neighborhoods',
-          paint: {
-            'fill-color': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              '#D3ADF7', // Hover color
-              '#9B40FF', // Default color
-            ],
-            'fill-opacity': 0.5,
-          },
-        },
-        firstSymbolId
-      );
-
-      map.addLayer(
-        {
-          id: 'neighborhoods-outline',
-          type: 'line',
-          source: 'neighborhoods',
-          paint: {
-            'line-color': '#000',
-            'line-width': 1,
-          },
-        },
-        firstSymbolId
-      );
-
-      // Move layers to the top just in case
-      map.moveLayer('neighborhoods-fill');
-      map.moveLayer('neighborhoods-outline');
-
-      // Add hover effect
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      });
-
-      let hoveredStateId: number | null = null;
-
-      map.on('mousemove', 'neighborhoods-fill', (e) => {
-        console.log('mousemove event triggered');
-        if (e.features && e.features.length > 0) {
-          const feature = e.features[0];
-          map.getCanvas().style.cursor = 'pointer';
-
-          const coordinates = e.lngLat;
-          const buurtName = feature.properties?.Buurt;
-
-          popup
-            .setLngLat(coordinates)
-            .setHTML(`<strong>${buurtName}</strong>`)
-            .addTo(map);
-
-          // if (hoveredStateId !== null) {
-          //   map.setFeatureState(
-          //     { source: 'neighborhoods', id: hoveredStateId },
-          //     { hover: false }
-          //   );
-          // }
-
-          // hoveredStateId = feature.id as number;
-
-          // map.setFeatureState(
-          //   { source: 'neighborhoods', id: hoveredStateId },
-          //   { hover: true }
-          // );
-        }
-      });
-
-      map.on('mouseleave', 'neighborhoods-fill', () => {
-        console.log('mouseleave event triggered');
-        map.getCanvas().style.cursor = '';
-        popup.remove();
-
-        if (hoveredStateId !== null) {
-          map.setFeatureState(
-            { source: 'neighborhoods', id: hoveredStateId },
-            { hover: false }
-          );
-        }
-        hoveredStateId = null;
-      });
-
-      console.log('GeoJSON layers added');
-    };
-
-    if (map.isStyleLoaded()) {
-      addLayers();
-    } else {
-      map.once('load', addLayers);
-    }
-  }, [geoData]); // This useEffect runs when geoData changes
-
-  // Fetch the GeoJSON data when the component mounts
-  useEffect(() => {
-    fetchGeoJSON();
-  }, [fetchGeoJSON]);
+  }, []);
 
   return (
     <div
-      className="map-container"
       ref={mapContainerRef}
-      style={{ width: '100%', height: '500px', border: '8px solid #9B40FF' }}
+      style={{
+        width: '100%',
+        height: '600px',
+      }}
     />
   );
 };

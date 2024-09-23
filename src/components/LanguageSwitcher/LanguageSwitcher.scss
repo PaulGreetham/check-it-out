@@ -1,0 +1,33 @@
+/* Define colors if necessary */
+$color-black: #000000;
+$color-white: #ffffff;
+
+.language-switcher-toggle {
+  font-size: 2rem;
+  text-transform: none; /* Prevent uppercase transformation */
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  min-width: auto;
+  background-color: transparent; /* Remove button background */
+  box-shadow: none; /* Remove button shadow */
+
+  &:hover {
+    background-color: transparent; /* Remove hover background */
+  }
+
+  .language-switcher__lang {
+    font-weight: normal;
+    transform: scale(0.9);
+    transition: transform 0.2s, font-weight 0.2s;
+  }
+
+  .active {
+    font-weight: bold;
+    transform: scale(1.1);
+  }
+
+  .language-switcher__separator {
+    margin: 0 0.5rem;
+  }
+}

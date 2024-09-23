@@ -1,0 +1,28 @@
+/* Navbar.scss */
+
+/* Define colors if necessary */
+$color-white: #ffffff;
+$color-black: #000000;
+
+.navbar {
+  box-shadow: none;
+
+  .navbar__toolbar {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar__logo {
+    height: 40px; /* Adjust size as needed */
+    width: auto;
+  }
+
+  .navbar__logo-link {
+    margin-right: auto; /* Push the rest of the buttons to the right */
+  }
+
+  .navbar__button {
+    font-size: 2rem;
+    padding: 1rem;
+  }
+}

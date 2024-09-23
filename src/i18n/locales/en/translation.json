@@ -1,7 +1,7 @@
 {
   "navbar": {
     "home": "Home",
-    "taskTimeCalculator": "Task Time Calculator",
+    "taskTimeCalculator": "Calculator",
     "map": "Map",
     "darkMode": "Dark",
     "lightMode": "Light"

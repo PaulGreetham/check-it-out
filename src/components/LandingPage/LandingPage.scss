@@ -1,0 +1,131 @@
+/* Remove any variable imports since we're using hardcoded values */
+
+/* Define hardcoded colors */
+$color-white: #ffffff;
+$color-black: #000000;
+$color-grey-dark: #767676;
+$color-check: #9b3fff; /* Adjust to your preference */
+$color-primary-dark: #8f94fb;  /* Adjust to your preference */
+
+.landing-page {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $color-white;
+  height: 90vh;
+  padding: 4rem;
+
+  &__content {
+    flex: 1;
+    margin-right: 2rem;
+
+    h1 {
+      font-size: 6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    p {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      color: $color-grey-dark;
+
+      a.landing-page__link {
+        color: $color-check;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  &__card {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    .card {
+      perspective: 150rem;
+      width: 400px;
+      height: 400px;
+      position: relative; /* Ensure the card is positioned correctly */
+
+      &__inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.8s ease;
+        transform-style: preserve-3d;
+
+        .card__front,
+        .card__back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden; /* For Safari */
+          border-radius: 1rem;
+          overflow: hidden;
+        }
+
+        .card__front {
+          background-color: $color-white;
+
+          .card__image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          }
+        }
+
+        .card__back {
+          background-image: linear-gradient(to right bottom, $color-check, $color-primary-dark);
+          transform: rotateY(180deg);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .card__back-content {
+            text-align: center;
+            color: $color-white;
+
+            .card__back-text {
+              font-size: 2.5rem;
+              font-weight: 300;
+              text-align: center;
+              margin-bottom: 2rem;
+            }
+
+            .card__back-button {
+              text-transform: uppercase;
+              text-decoration: none;
+              padding: 0.75rem 2rem;
+              display: inline-block;
+              border-radius: 10rem;
+              transition: all 0.2s;
+              position: relative;
+              font-size: 1.6rem;
+              background-color: $color-white;
+              color: $color-grey-dark;
+
+              &:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 1rem 2rem rgba($color-black, 0.2);
+              }
+
+              &:active {
+                transform: translateY(-1px);
+                box-shadow: 0 0.5rem 1rem rgba($color-black, 0.2);
+              }
+            }
+          }
+        }
+      }
+
+      &:hover .card__inner {
+        transform: rotateY(-180deg);
+      }
+    }
+  }
+}

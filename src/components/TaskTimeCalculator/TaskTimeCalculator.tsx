@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { TaskTimeCalculatorProps, WorkerBreakdown } from '../../types/components';
 import { calculateTotalTime } from '../../utils/calculateTotalTime';
 
-// Create a custom styled tooltip with a darker background
 const DarkTooltip = styled(({ className, ...props }: any) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({

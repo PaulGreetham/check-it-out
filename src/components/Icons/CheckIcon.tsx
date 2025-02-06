@@ -1,8 +1,6 @@
 import React from 'react';
-import { useThemeContext } from '../../theme/ThemeProvider';
 
 const CheckIcon: React.FC<{ className?: string }> = ({ className }) => {
-  const { isDarkMode } = useThemeContext();
 
   return (
     <svg 
@@ -11,7 +9,7 @@ const CheckIcon: React.FC<{ className?: string }> = ({ className }) => {
       viewBox="0 0 24 24" 
       className={className}
       fill="none" 
-      stroke={isDarkMode ? '#ffffff' : '#000000'} 
+      stroke="#ffffff"
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round"

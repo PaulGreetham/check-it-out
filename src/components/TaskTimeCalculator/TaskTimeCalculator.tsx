@@ -79,6 +79,7 @@ const TaskTimeCalculator: React.FC<TaskTimeCalculatorProps> = ({
         title: t('taskTimeCalculator.totalTime', { time: totalTime }),
         text: t('taskTimeCalculator.successMessage'),
         icon: 'success',
+        confirmButtonColor: '#0277bd'
       });
     }
   }, [totalTime, t]);

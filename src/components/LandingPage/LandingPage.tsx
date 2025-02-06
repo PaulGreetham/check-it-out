@@ -18,6 +18,7 @@ const LandingPage: React.FC = () => {
       icon: 'success',
       confirmButtonText: t('landingPage.awesome'),
       background: theme.palette.background.paper,
+      confirmButtonColor: '#0277bd'
     });
   };
 

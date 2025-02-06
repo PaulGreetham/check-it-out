@@ -28,7 +28,7 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
       <MUIThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <CssBaseline /> {/* Apply baseline styles */}
+        <CssBaseline />
         {children}
       </MUIThemeProvider>
     </ThemeContext.Provider>

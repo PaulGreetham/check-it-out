@@ -4,7 +4,7 @@ import { TFunction } from 'i18next';
 export function calculateTotalTime(
   mopedsArray: string[],
   distancesArray: number[],
-  t: TFunction // Pass `t` for translation
+  t: TFunction
 ): TotalTimeResult {
   const taskTimes: Record<string, number> = { S: 1, F: 5, M: 8 };
 

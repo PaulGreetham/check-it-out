@@ -3,7 +3,6 @@ import mapboxgl, { Map, AnyLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 
-// **IMPORTANT:** Access token is now managed via environment variables.
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || '';
 
 const MapboxNeighborhoodMap: React.FC = () => {
@@ -20,15 +19,13 @@ const MapboxNeighborhoodMap: React.FC = () => {
     );
   };
 
-  // **Option 2: Using useCallback to memoize flipGeoJSON**
   const flipCoordinates = useCallback((coords: any): any => {
     if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
-      // [lat, lng] to [lng, lat]
       return [coords[1], coords[0]];
     } else {
       return coords.map((coord: any) => flipCoordinates(coord));
     }
-  }, []); // No dependencies, so it's memoized once
+  }, []);
 
   const flipGeoJSON = useCallback(
     (geojson: FeatureCollection<Polygon | MultiPolygon>): FeatureCollection<Polygon | MultiPolygon> => {
@@ -76,20 +73,8 @@ const MapboxNeighborhoodMap: React.FC = () => {
         );
         let geojsonData: FeatureCollection<Polygon | MultiPolygon> = await response.json();
 
-        console.log('Fetched GeoJSON data:', geojsonData);
-
-        // Inspect the first feature's coordinates
-        const firstFeature = geojsonData.features[0];
-        console.log('First Feature Geometry Type:', firstFeature.geometry.type);
-        console.log(
-          'First Feature Coordinates (First Ring, first 5 coords):',
-          firstFeature.geometry.coordinates[0].slice(0, 5)
-        );
-
         // Flip coordinates assuming they are in [lat, lng] order
-        console.log('Flipping GeoJSON coordinates from [lat, lng] to [lng, lat]...');
         geojsonData = flipGeoJSON(geojsonData);
-        console.log('Coordinate flipping complete.');
 
         // Add source for the GeoJSON
         if (map.getSource('amsterdam-neighbourhood')) {
@@ -109,7 +94,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
             source: 'amsterdam-neighbourhood',
             layout: {},
             paint: {
-              'fill-color': '#6C2DC7', // Check purple
+              'fill-color': '#81d4fa',
               'fill-opacity': 0.6,
             },
           } as AnyLayer);
@@ -123,7 +108,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
             source: 'amsterdam-neighbourhood',
             layout: {},
             paint: {
-              'line-color': '#ffffff',
+              'line-color': '#0277bd',
               'line-width': 2,
             },
           } as AnyLayer);
@@ -175,11 +160,10 @@ const MapboxNeighborhoodMap: React.FC = () => {
       }
     });
 
-    // Clean up on unmount
     return () => {
       map.remove();
     };
-  }, [flipGeoJSON]); // Include flipGeoJSON in dependencies
+  }, [flipGeoJSON]);
 
   return (
     <div

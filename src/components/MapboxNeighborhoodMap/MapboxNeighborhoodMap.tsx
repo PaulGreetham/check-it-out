@@ -94,7 +94,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
             source: 'amsterdam-neighbourhood',
             layout: {},
             paint: {
-              'fill-color': '#81d4fa',
+              'fill-color': '#e1f5fe',
               'fill-opacity': 0.6,
             },
           } as AnyLayer);
@@ -170,7 +170,7 @@ const MapboxNeighborhoodMap: React.FC = () => {
       ref={mapContainerRef}
       style={{
         width: '100%',
-        height: '600px',
+        height: '800px',
       }}
     />
   );

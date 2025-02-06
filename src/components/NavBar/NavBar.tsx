@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Button } from '@mui/material';
 import { useThemeContext } from '../../theme/ThemeProvider';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import Logo from '../../assets/check_logo.webp';
+import CheckIcon from '../Icons/CheckIcon';
 import './NavBar.scss';
 
 const Navbar: React.FC = () => {
@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
     <AppBar position="static" className="navbar" elevation={0}>
       <Toolbar className="navbar__toolbar">
         <Link to="/" className="navbar__logo-link">
-          <img src={Logo} alt="Check-logo" className="navbar__logo" />
+          <CheckIcon className="navbar__logo" />
         </Link>
         <Button
           color="inherit"

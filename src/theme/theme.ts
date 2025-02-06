@@ -2,7 +2,7 @@
 import { createTheme } from '@mui/material/styles';
 
 // Define your brand colors
-const checkPurple = '#9B40FF';
+const checkPurple = '#0277bd';
 const checkWhite = '#FFFFFF';
 const checkBlack = '#000000';
 
@@ -11,14 +11,14 @@ export const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: checkPurple, // Check's brand purple
+      main: checkPurple,
     },
     secondary: {
       main: checkWhite,
     },
     background: {
       default: checkWhite,
-      paper: '#f5f5f5', // Light background for paper components
+      paper: '#f5f5f5',
     },
     text: {
       primary: checkBlack,
@@ -26,7 +26,7 @@ export const lightTheme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Bebas Neue', // Use Bebas Neue as the primary font
+      'Bebas Neue',
       'ui-sans-serif',
       'system-ui',
       '-apple-system',
@@ -74,8 +74,8 @@ export const darkTheme = createTheme({
       main: checkWhite,
     },
     background: {
-      default: '#1E1E1E',  // Dark mode background
-      paper: '#1e1e1e',     // Dark background for paper components
+      default: '#1E1E1E',
+      paper: '#1e1e1e',
     },
     text: {
       primary: checkWhite,
@@ -83,7 +83,7 @@ export const darkTheme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Bebas Neue', // Use Bebas Neue as the primary font
+      'Bebas Neue',
       'ui-sans-serif',
       'system-ui',
       '-apple-system',

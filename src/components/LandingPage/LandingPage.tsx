@@ -1,6 +1,6 @@
 import React from 'react';
 import './LandingPage.scss';
-import TravelingImage from '../../assets/undraw_traveling_yhxq.svg';
+import TravelingImage from '../../assets/undraw_traveling_c18z.svg';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useTranslation, Trans } from 'react-i18next';

@@ -1,7 +1,7 @@
 $color-white: #ffffff;
 $color-black: #000000;
 $color-grey-dark: #767676;
-$color-check: #9b3fff;
+$color-check: #0277bd;
 $color-primary-dark: #8f94fb;
 
 .landing-page {
@@ -46,7 +46,7 @@ $color-primary-dark: #8f94fb;
       perspective: 150rem;
       width: 400px;
       height: 400px;
-      position: relative; /* Ensure the card is positioned correctly */
+      position: relative;
 
       &__inner {
         position: relative;
@@ -61,7 +61,7 @@ $color-primary-dark: #8f94fb;
           width: 100%;
           height: 100%;
           backface-visibility: hidden;
-          -webkit-backface-visibility: hidden; /* For Safari */
+          -webkit-backface-visibility: hidden;
           border-radius: 1rem;
           overflow: hidden;
         }

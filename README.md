@@ -32,7 +32,7 @@ A web application designed to optimize moped maintenance routes and visualize Am
 
 - Access the map through the navbar.
 - Hover over neighborhoods to see their names.
-- The map is styled in Check's signature purple and highlights neighborhoods on hover.
+- The map is styled and highlights neighborhoods on hover.
 
 ### Language Switching
 
